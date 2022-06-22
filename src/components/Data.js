@@ -1,9 +1,9 @@
 import React from "react";
 
-const Data = ({people}) => {
+const Data = ({people, phone}) => {
    return ( 
       <div>
-         <p>{people}</p>
+         <p>{people}: {phone}</p>
       </div>
     );
 }
