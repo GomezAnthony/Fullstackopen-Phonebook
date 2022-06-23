@@ -1,16 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import Form from "./components/Form";
 import Title from "./components/Title";
 import Data from "./components/Data";
 import Filter from "./components/Filter";
+import axios from "axios";
 const App = () => {
-  const [person, setPerson] = useState([
-    {name: 'Bob Bill', phone: '123-445-6778'},
-    {name: 'Timmy Phill', phone: '333-555-6789'}
-  ])
+  const [person, setPerson] = useState([])
   const [newName, setNewName] = useState('')
   const [phone, setPhone] = useState('')
   const [filter, setFilter] = useState([])
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        setPerson(response.data)
+      })
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -64,7 +70,7 @@ const App = () => {
         />
         <Title label="Numbers"/>
         {filtered.map(people =>
-          <Data key={people.name} people={people.name} phone={people.phone}/>
+          <Data key={people.name} people={people.name} phone={people.number}/>
           )}
     </div>
   );
