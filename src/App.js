@@ -3,7 +3,8 @@ import Form from "./components/Form";
 import Title from "./components/Title";
 import Data from "./components/Data";
 import Filter from "./components/Filter";
-import axios from "axios";
+import info from './services/information';
+
 const App = () => {
   const [person, setPerson] = useState([])
   const [newName, setNewName] = useState('')
@@ -11,10 +12,10 @@ const App = () => {
   const [filter, setFilter] = useState([])
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPerson(response.data)
+    info
+      .getAll()
+      .then(infor => {
+        setPerson(infor)
       })
   }, [])
 
@@ -23,8 +24,9 @@ const App = () => {
     console.log('Button Clicked', e.target)
     const addName = {
       name: newName,
-      phone: phone
+      number: phone,
     }
+   
   
     const check = person.map(persons => persons.name)
     console.log(check)
@@ -32,9 +34,14 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
       return
     }
-    setPerson(person.concat(addName))
-    setNewName('')
-    setPhone('')
+
+    info
+      .create(addName)
+      .then(add => {
+        setPerson(person.concat(add))
+        setNewName('')
+        setPhone('')
+      })
   }
 
   const handleNameChange = (e) => {
