@@ -26,23 +26,44 @@ const App = () => {
       name: newName,
       number: phone,
     }
-   
-  
-    const check = person.map(persons => persons.name)
-    console.log(check)
-    if (check.includes(newName)) {
-      alert(`${newName} is already added to phonebook`)
-      return
-    }
-
-    info
+    const existing = person.find(person => person.name === newName)
+    if (existing) {
+      if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        info
+          .update(existing.id, addName)
+          .then(returned => {
+            setPerson(person.map(persons => persons.id === returned.id ? persons : returned))
+          })
+          .catch(err => err)
+      }
+    } else {
+      info
       .create(addName)
       .then(add => {
+        alert(`${newName} added`)
         setPerson(person.concat(add))
         setNewName('')
         setPhone('')
       })
+    }
+    
   }
+
+  const deletePerson = (id, name) => {
+   if (window.confirm(`Delete ${name}`)) {
+    info
+      .remove(id)
+      .then(() => {
+        setPerson(person.filter(persons => persons.id !== id))
+        
+      })
+      .catch(err => {
+        setPerson(person.filter(p => p.id !== id))
+      })
+   }
+
+  }
+
 
   const handleNameChange = (e) => {
     console.log(e.target.value)
@@ -58,8 +79,10 @@ const App = () => {
     console.log(e.target.value)
     setFilter(e.target.value)
   }
-  console.log(person.filter(e => e.name.includes('B')))
+
+
   const filtered = person.filter(e => e.name.toLowerCase().includes(filter))
+
   return (
     <div>
       <Title label="PhoneBook"/>
@@ -76,9 +99,7 @@ const App = () => {
         phoneChange={handlePhoneChange}
         />
         <Title label="Numbers"/>
-        {filtered.map(people =>
-          <Data key={people.name} people={people.name} phone={people.number}/>
-          )}
+       <Data person={filtered}  deletePeople={deletePerson}/>
     </div>
   );
 };
